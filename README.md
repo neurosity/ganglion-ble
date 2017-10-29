@@ -13,13 +13,14 @@ import Ganglion from 'ganglion-ble';
 
 const ganglion = new Ganglion();
 await ganglion.connect();
+await ganglion.start();
 
 ganglion.stream.subscribe(sample => {
     console.log('sample', sample);
 });
 ```
 
-A sample consists of:
+Currently, a sample consists of a Uint8Array of 20. Next steps are to process this buffer into a sample following this data structure:
 
 ``` js
 {
