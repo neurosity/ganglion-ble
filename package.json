@@ -24,6 +24,7 @@
   "author": "Alex Castillo <alex@castillo.io>",
   "license": "MIT",
   "dependencies": {
+    "openbci-utilities": "file:///Users/aj/openbci/OpenBCI_NodeJS_Utilities/openbci-utilities-0.3.0.tgz",
     "rxjs": "^5.4.2"
   },
   "devDependencies": {
