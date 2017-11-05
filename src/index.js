@@ -1,3 +1,5 @@
+import { parseGanglion } from 'openbci-utilities/dist/utilities';
+import k from 'openbci-utilities/dist/constants';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeUntil';
@@ -19,9 +21,12 @@ export default class Ganglion {
         this.service = null;
         this.characteristics = null;
         this.onDisconnect$ = new Subject();
-        this.decompressedSamples = [];
+        this.rawDataPacketToSample = k.rawDataToSampleObjectDefault(k.numberOfChannelsForBoardType('ganglion'));
         this.stream = new Subject()
-            .map(this.eventToBuffer)
+            .map((event) => {
+                this.rawDataPacketToSample.rawDataPacket = new Uint8Array(event.target.value.buffer);
+                return parseGanglion(this.rawDataPacketToSample);
+            })
             .takeUntil(this.onDisconnect$);
     }
     
@@ -52,10 +57,6 @@ export default class Ganglion {
 
         await writer.writeValue(startCommand);
         reader.readValue();
-    }
-
-    eventToBuffer (event) {
-        return new Uint8Array(event.target.value.buffer);
     }
 
     disconnect () {

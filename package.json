@@ -24,6 +24,7 @@
   "author": "Alex Castillo <alex@castillo.io>",
   "license": "MIT",
   "dependencies": {
+    "openbci-utilities": "0.3.0",
     "rxjs": "^5.4.2"
   },
   "devDependencies": {
