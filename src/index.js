@@ -1,5 +1,5 @@
-import { parseGanglion } from 'openbci-utilities/dist/utilities'
-import constants from 'openbci-utilities/dist/constants'
+import { parseGanglion } from 'openbci-utilities/dist/utilities';
+import k from 'openbci-utilities/dist/constants';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeUntil';
@@ -12,8 +12,6 @@ import {
     START_COMMAND_STRING as startCommandString
 } from './constants';
 
-const k = constants;
-
 export default class Ganglion {
 
     constructor () {
@@ -24,12 +22,10 @@ export default class Ganglion {
         this.characteristics = null;
         this.onDisconnect$ = new Subject();
         this.rawDataPacketToSample = k.rawDataToSampleObjectDefault(k.numberOfChannelsForBoardType('ganglion'));
-        console.log('this.rawDataPacketToSample', this.rawDataPacketToSample);
-
-      this.stream = new Subject()
+        this.stream = new Subject()
             .map((event) => {
-              this.rawDataPacketToSample.rawDataPacket = new Uint8Array(event.target.value.buffer);
-              return parseGanglion(this.rawDataPacketToSample);
+                this.rawDataPacketToSample.rawDataPacket = new Uint8Array(event.target.value.buffer);
+                return parseGanglion(this.rawDataPacketToSample);
             })
             .takeUntil(this.onDisconnect$);
     }
