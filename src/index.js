@@ -1,8 +1,15 @@
 import { parseGanglion } from 'openbci-utilities/dist/utilities';
 import k from 'openbci-utilities/dist/constants';
+import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/first';
+import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/observable/fromEvent';
 
 import {
     DEVICE_OPTIONS as deviceOptions,
@@ -21,22 +28,37 @@ export default class Ganglion {
         this.service = null;
         this.characteristics = null;
         this.onDisconnect$ = new Subject();
-        this.rawDataPacketToSample = k.rawDataToSampleObjectDefault(k.numberOfChannelsForBoardType('ganglion'));
+        this.boardName = 'ganglion';
+        this.channelSize = k.numberOfChannelsForBoardType(this.boardName);
+        this.rawDataPacketToSample = k.rawDataToSampleObjectDefault(this.channelSize);
+        this.connectionStatus = new BehaviorSubject(false);
         this.stream = new Subject()
-            .map((event) => {
-                this.rawDataPacketToSample.rawDataPacket = new Uint8Array(event.target.value.buffer);
-                return parseGanglion(this.rawDataPacketToSample);
-            })
+            .map(event => this.eventToBufferMapper(event))
+            .do(buffer => this.setRawDataPacket(buffer))
+            .map(() => parseGanglion(this.rawDataPacketToSample))
+            .mergeMap(x => x)
             .takeUntil(this.onDisconnect$);
+    }
+
+    eventToBufferMapper (event) {
+        return new Uint8Array(event.target.value.buffer);
+    }
+
+    setRawDataPacket (buffer) {
+        this.rawDataPacketToSample.rawDataPacket = buffer;
     }
     
     async connect () {
         this.device = await navigator.bluetooth.requestDevice(deviceOptions);
+        this.addDisconnectedEvent();
         this.gatt = await this.device.gatt.connect();
         this.deviceName = this.gatt.device.name;
         this.service = await this.gatt.getPrimaryService(serviceId);
-        const characteristics = await this.service.getCharacteristics();
+        this.setCharacteristics(await this.service.getCharacteristics());
+        this.connectionStatus.next(true);
+    }
 
+    setCharacteristics (characteristics) {
         this.characteristics = Object
             .entries(characteristicsByType)
             .reduce((map, [ name, uuid ]) => ({
@@ -57,6 +79,19 @@ export default class Ganglion {
 
         await writer.writeValue(startCommand);
         reader.readValue();
+    }
+
+    addDisconnectedEvent () {
+        Observable.fromEvent(this.device, 'gattserverdisconnected')
+            .first()
+            .subscribe(() => {
+                this.gatt = null;
+                this.device = null;
+                this.deviceName = null;
+                this.service = null;
+                this.characteristics = null;
+                this.connectionStatus.next(false);
+            });
     }
 
     disconnect () {
