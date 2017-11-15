@@ -1,5 +1,5 @@
 import { parseGanglion } from 'openbci-utilities/dist/utilities';
-import k from 'openbci-utilities/dist/constants';
+import { numberOfChannelsForBoardType, rawDataToSampleObjectDefault } from 'openbci-utilities/dist/constants';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -29,8 +29,8 @@ export default class Ganglion {
         this.characteristics = null;
         this.onDisconnect$ = new Subject();
         this.boardName = 'ganglion';
-        this.channelSize = k.numberOfChannelsForBoardType(this.boardName);
-        this.rawDataPacketToSample = k.rawDataToSampleObjectDefault(this.channelSize);
+        this.channelSize = numberOfChannelsForBoardType(this.boardName);
+        this.rawDataPacketToSample = rawDataToSampleObjectDefault(this.channelSize);
         this.connectionStatus = new BehaviorSubject(false);
         this.stream = new Subject()
             .map(event => this.eventToBufferMapper(event))
