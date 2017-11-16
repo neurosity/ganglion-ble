@@ -16,12 +16,13 @@ import {
     GANGLION_SERVICE_ID as serviceId,
     CHARACTERISTICS as characteristicsByType,
     CHARACTERISTIC_EVENT as onCharacteristic,
-    START_COMMAND_STRING as startCommandString
+    COMMAND_STRINGS as commandStrings
 } from './constants';
 
 export default class Ganglion {
 
-    constructor () {
+    constructor (options = {}) {
+        this.options = options;
         this.gatt = null;
         this.device = null;
         this.deviceName = null;
@@ -69,15 +70,22 @@ export default class Ganglion {
 
     async start () {
         const { reader, writer } = this.characteristics;
-        const encoder = new TextEncoder();
-        const startCommand = encoder.encode(startCommandString);
+        const commands = Object.entries(commandStrings)
+            .reduce((acc, [ key, command ]) => ({
+                ...acc,
+                [key]: new TextEncoder().encode(command)
+            }), {});
 
         reader.startNotifications();
         reader.addEventListener(onCharacteristic, event => {
             this.stream.next(event);
         });
 
-        await writer.writeValue(startCommand);
+        if (this.options.accel) {
+            await writer.writeValue(commands.accel);
+            reader.readValue();
+        }
+        await writer.writeValue(commands.start);
         reader.readValue();
     }
 
