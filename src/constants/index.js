@@ -12,4 +12,7 @@ export const DEVICE_OPTIONS = {
     ],
     optionalServices: [GANGLION_SERVICE_ID]
 };
-export const START_COMMAND_STRING = 'b';
+export const COMMAND_STRINGS = {
+    start: 'b',
+    accelData: 'n'
+};

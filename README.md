@@ -31,6 +31,21 @@ Currently, a sample consists of a Uint8Array of 20. Next steps are to process th
 
 > For security reasons, WebBLE must be started from user interaction. Add a connect button that would start the BLE connection. See ./examples/basic/index.js
 
+## Accelerometer data example
+
+``` js
+import Ganglion from 'ganglion-ble';
+
+const ganglion = new Ganglion({
+  accelData: true
+});
+await ganglion.connect();
+await ganglion.start();
+
+ganglion.accelData.subscribe(sample => {
+    console.log('sample with accelData', sample);
+});
+
 ## Demo
 
 * Clone this repo
