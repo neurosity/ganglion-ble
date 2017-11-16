@@ -45,6 +45,7 @@ await ganglion.start();
 ganglion.accelData.subscribe(sample => {
     console.log('sample with accelData', sample);
 });
+```
 
 ## Demo
 
