@@ -52,7 +52,7 @@ ganglion.accelData.subscribe(sample => {
 * Clone this repo
 * `npm install`
 * `npm start`
-* Go to http://localhost:900/examples/basic
+* Go to http://localhost:9000/examples/basic
 
 ### License
 
