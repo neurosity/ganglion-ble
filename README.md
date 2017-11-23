@@ -11,13 +11,17 @@ WebBluetooth client for the Ganglion EEG board by OpenBCI
 ``` js
 import Ganglion from 'ganglion-ble';
 
-const ganglion = new Ganglion();
-await ganglion.connect();
-await ganglion.start();
+async function init () {
+  const ganglion = new Ganglion();
+  await ganglion.connect();
+  await ganglion.start();
 
-ganglion.stream.subscribe(sample => {
-    console.log('sample', sample);
-});
+  ganglion.stream.subscribe(sample => {
+      console.log('sample', sample);
+  });
+}
+
+init();
 ```
 
 Currently, a sample consists of a Uint8Array of 20. Next steps are to process this buffer into a sample following this data structure:
@@ -34,14 +38,6 @@ Currently, a sample consists of a Uint8Array of 20. Next steps are to process th
 ## Accelerometer data example
 
 ``` js
-import Ganglion from 'ganglion-ble';
-
-const ganglion = new Ganglion({
-  accelData: true
-});
-await ganglion.connect();
-await ganglion.start();
-
 ganglion.accelData.subscribe(sample => {
     console.log('sample with accelData', sample);
 });
