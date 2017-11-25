@@ -21,7 +21,9 @@ import {
     GANGLION_SERVICE_ID as serviceId,
     CHARACTERISTICS as characteristicsByType,
     CHARACTERISTIC_EVENT as onCharacteristic,
-    COMMAND_STRINGS as commandStrings
+    DISCONNECTED_EVENT as onDisconnected,
+    COMMAND_STRINGS as commandStrings,
+    BOARD_NAME as boardName
 } from './constants';
 
 export default class Ganglion {
@@ -34,8 +36,8 @@ export default class Ganglion {
         this.service = null;
         this.characteristics = null;
         this.onDisconnect$ = new Subject();
-        this.boardName = 'ganglion';
-        this.channelSize = numberOfChannelsForBoardType(this.boardName);
+        this.boardName = boardName;
+        this.channelSize = numberOfChannelsForBoardType(boardName);
         this.rawDataPacketToSample = rawDataToSampleObjectDefault(this.channelSize);
         this.connectionStatus = new BehaviorSubject(false);
         this.stream = new Subject().pipe(
@@ -100,7 +102,7 @@ export default class Ganglion {
     }
 
     addDisconnectedEvent () {
-        fromEvent(this.device, 'gattserverdisconnected')
+        fromEvent(this.device, onDisconnected)
             .pipe(first())
             .subscribe(() => {
                 this.gatt = null;
