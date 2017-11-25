@@ -1,15 +1,18 @@
 import { parseGanglion } from 'openbci-utilities/dist/utilities';
-import { numberOfChannelsForBoardType, rawDataToSampleObjectDefault } from 'openbci-utilities/dist/constants';
-import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/takeUntil';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/observable/fromEvent';
+import {
+    numberOfChannelsForBoardType,
+    rawDataToSampleObjectDefault
+} from 'openbci-utilities/dist/constants';
+
+import { tap } from 'rxjs/operators/tap';
+import { map } from 'rxjs/operators/map';
+import { first } from 'rxjs/operators/first';
+import { filter } from 'rxjs/operators/filter';
+import { takeUntil } from 'rxjs/operators/takeUntil';
+import { mergeMap } from 'rxjs/operators/mergeMap';
+import { fromEvent } from 'rxjs/observable/fromEvent';
 
 import { renameDataProp } from './utils';
 
@@ -35,15 +38,17 @@ export default class Ganglion {
         this.channelSize = numberOfChannelsForBoardType(this.boardName);
         this.rawDataPacketToSample = rawDataToSampleObjectDefault(this.channelSize);
         this.connectionStatus = new BehaviorSubject(false);
-        this.stream = new Subject()
-            .map(event => this.eventToBufferMapper(event))
-            .do(buffer => this.setRawDataPacket(buffer))
-            .map(() => parseGanglion(this.rawDataPacketToSample))
-            .mergeMap(x => x)
-            .map(renameDataProp)
-            .takeUntil(this.onDisconnect$);
-        this.accelData = this.stream
-            .filter(sample => sample.accelData.length);
+        this.stream = new Subject().pipe(
+            map(event => this.eventToBufferMapper(event)),
+            tap(buffer => this.setRawDataPacket(buffer)),
+            map(() => parseGanglion(this.rawDataPacketToSample)),
+            mergeMap(x => x),
+            map(renameDataProp),
+            takeUntil(this.onDisconnect$)
+        );
+        this.accelData = this.stream.pipe(
+            filter(sample => sample.accelData.length)
+        );
     }
 
     eventToBufferMapper (event) {
@@ -95,8 +100,8 @@ export default class Ganglion {
     }
 
     addDisconnectedEvent () {
-        Observable.fromEvent(this.device, 'gattserverdisconnected')
-            .first()
+        fromEvent(this.device, 'gattserverdisconnected')
+            .pipe(first())
             .subscribe(() => {
                 this.gatt = null;
                 this.device = null;
