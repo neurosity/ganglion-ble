@@ -11,6 +11,8 @@ import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/fromEvent';
 
+import { renameDataProp } from './utils';
+
 import {
     DEVICE_OPTIONS as deviceOptions,
     GANGLION_SERVICE_ID as serviceId,
@@ -38,6 +40,7 @@ export default class Ganglion {
             .do(buffer => this.setRawDataPacket(buffer))
             .map(() => parseGanglion(this.rawDataPacketToSample))
             .mergeMap(x => x)
+            .map(renameDataProp)
             .takeUntil(this.onDisconnect$);
         this.accelData = this.stream
             .filter(sample => sample.accelData.length);
