@@ -24,7 +24,7 @@ async function init () {
 init();
 ```
 
-Currently, a sample consists of a Uint8Array of 20. Next steps are to process this buffer into a sample following this data structure:
+A sample follows this data structure:
 
 ``` js
 {
