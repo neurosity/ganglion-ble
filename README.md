@@ -33,7 +33,7 @@ A sample follows this data structure:
 };
 ```
 
-> For security reasons, WebBLE must be started from user interaction. Add a connect button that would start the BLE connection. See ./examples/basic/index.js
+> For security reasons, Web Bluetooth must be started from user interaction. Add a connect button that would start the BLE connection. See ./examples/basic/index.js
 
 ## Accelerometer data example
 
