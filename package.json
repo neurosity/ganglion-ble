@@ -3,7 +3,6 @@
   "version": "0.1.4",
   "description": "WebBluetooth client for the Ganglion EEG board by OpenBCI",
   "main": "dist/ganglion-ble.umd.js",
-  "module": "src/index.js",
   "lock": false,
   "scripts": {
     "build": "webpack",
