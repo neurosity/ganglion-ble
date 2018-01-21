@@ -1,6 +1,6 @@
 {
   "name": "ganglion-ble",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "WebBluetooth client for the Ganglion EEG board by OpenBCI",
   "main": "dist/ganglion-ble.umd.js",
   "lock": false,
