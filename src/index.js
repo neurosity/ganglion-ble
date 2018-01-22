@@ -26,7 +26,7 @@ import {
     BOARD_NAME as boardName
 } from './constants';
 
-export default class Ganglion {
+export class Ganglion {
 
     constructor (options = {}) {
         this.options = options;
@@ -120,3 +120,5 @@ export default class Ganglion {
         this.gatt.disconnect();
     }
 }
+
+export default Ganglion;

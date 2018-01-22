@@ -2,7 +2,6 @@ const path = require('path');
 
 const library = 'Ganglion';
 const libraryFileName = 'ganglion-ble';
-const libraryExport = 'default';
 
 const config = {
     entry: './src/index.js',
@@ -30,8 +29,7 @@ const exportLibraryTarget = libraryTarget =>
             path: path.resolve(__dirname, 'dist'),
             filename: `${libraryFileName}.${libraryTarget}.js`,
             library,
-            libraryTarget,
-            libraryExport
+            libraryTarget
         }
     });
 
