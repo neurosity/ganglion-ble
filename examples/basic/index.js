@@ -2,7 +2,7 @@
 let ganglion;
 
 const onConnectClick = async () => {
-    ganglion = new Ganglion();
+    ganglion = new Ganglion.Ganglion();
     await ganglion.connect();
     await ganglion.start();
     ganglion.stream.subscribe(sample => {

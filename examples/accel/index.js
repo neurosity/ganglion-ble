@@ -2,7 +2,7 @@
 let ganglion;
 
 const onConnectClick = async () => {
-    ganglion = new Ganglion({ accelData: true });
+    ganglion = new Ganglion.Ganglion({ accelData: true });
     await ganglion.connect();
     await ganglion.start();
     ganglion.accelData
